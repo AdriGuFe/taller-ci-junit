@@ -32,6 +32,10 @@ jobs:
       
       - name: Ejecutar tests
         run: mvn test -B
+
+      # Verificar estilo de código (opcional)
+      - name: Verificar formato de código
+        run: mvn validate
       
       - name: Generar reporte de cobertura
         run: mvn jacoco:report
