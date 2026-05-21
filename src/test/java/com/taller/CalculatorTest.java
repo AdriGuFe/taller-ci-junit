@@ -160,4 +160,18 @@ class CalculatorTest {
         int result = calculator.power(2, 3);
         assertEquals(8, result, "2^3 debe ser 8");
     }
+
+    @Test
+    @DisplayName("Potencia con exponente 0")
+    void testPowerWithZeroExponent() {
+        assertEquals(1, calculator.power(5, 0), "Cualquier número^0 debe ser 1");
+    }
+
+    @Test
+    @DisplayName("Potencia con exponente negativo lanza excepción")
+    void testPowerWithNegativeExponentThrowsException() {
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> calculator.power(2, -3));
+    }
 }
