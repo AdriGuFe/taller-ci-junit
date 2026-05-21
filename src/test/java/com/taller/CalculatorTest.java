@@ -174,4 +174,25 @@ class CalculatorTest {
                 IllegalArgumentException.class,
                 () -> calculator.power(2, -3));
     }
+
+    // En CalculatorTest.java
+    @Test
+    @DisplayName("Factorial de 5")
+    void testFactorial() {
+        assertEquals(120, calculator.factorial(5), "5! debe ser 120");
+    }
+
+    @Test
+    @DisplayName("Factorial de 0 es 1")
+    void testFactorialZero() {
+        assertEquals(1, calculator.factorial(0), "0! debe ser 1");
+    }
+
+    @Test
+    @DisplayName("Factorial de número negativo lanza excepción")
+    void testFactorialNegative() {
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> calculator.factorial(-5));
+    }
 }

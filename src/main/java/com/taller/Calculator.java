@@ -92,4 +92,19 @@ public class Calculator {
         }
         return result;
     }
+
+    // En Calculator.java
+    public int factorial(int n) {
+        if (n < 0) {
+            throw new IllegalArgumentException("No se puede calcular factorial de negativos");
+        }
+        if (n == 0 || n == 1) {
+            return 1;
+        }
+        int result = 1;
+        for (int i = 2; i <= n; i++) {
+            result *= i;
+        }
+        return result;
+    }
 }
