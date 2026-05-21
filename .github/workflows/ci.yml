@@ -1,0 +1,100 @@
+name: CI Completo
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:  # Permite ejecución manual
+
+env:
+  JAVA_VERSION: '17'
+
+jobs:
+  # Job 1: Build y Test
+  build:
+    name: Build y Test
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout código
+        uses: actions/checkout@v4
+      
+      - name: Configurar JDK ${{ env.JAVA_VERSION }}
+        uses: actions/setup-java@v4
+        with:
+          java-version: ${{ env.JAVA_VERSION }}
+          distribution: 'temurin'
+          cache: maven
+      
+      - name: Compilar proyecto
+        run: mvn clean compile -B
+      
+      - name: Ejecutar tests
+        run: mvn test -B
+      
+      - name: Generar reporte de cobertura
+        run: mvn jacoco:report
+      
+      - name: Subir resultados de tests
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results
+          path: target/surefire-reports/
+      
+      - name: Subir reporte de cobertura
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: target/site/jacoco/
+  
+  # Job 2: Análisis de código (se ejecuta en paralelo)
+  code-quality:
+    name: Análisis de código
+    runs-on: ubuntu-latest
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Configurar JDK ${{ env.JAVA_VERSION }}
+        uses: actions/setup-java@v4
+        with:
+          java-version: ${{ env.JAVA_VERSION }}
+          distribution: 'temurin'
+          cache: maven
+      
+      - name: Ejecutar Checkstyle
+        run: mvn checkstyle:check -B
+        continue-on-error: true
+      
+      - name: Ejecutar PMD
+        run: mvn pmd:check -B
+        continue-on-error: true
+  
+  # Job 3: Package (solo si build y code-quality tienen éxito)
+  package:
+    name: Empaquetar aplicación
+    needs: [build, code-quality]
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Configurar JDK ${{ env.JAVA_VERSION }}
+        uses: actions/setup-java@v4
+        with:
+          java-version: ${{ env.JAVA_VERSION }}
+          distribution: 'temurin'
+          cache: maven
+      
+      - name: Empaquetar
+        run: mvn package -DskipTests -B
+      
+      - name: Subir JAR
+        uses: actions/upload-artifact@v4
+        with:
+          name: application-jar
+          path: target/*.jar
