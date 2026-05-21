@@ -106,10 +106,9 @@ class CalculatorTest {
     void testDivideByZeroThrowsException() {
         // Verificamos que se lanza la excepción esperada
         ArithmeticException exception = assertThrows(
-            ArithmeticException.class,
-            () -> calculator.divide(10, 0),
-            "Dividir por cero debe lanzar ArithmeticException"
-        );
+                ArithmeticException.class,
+                () -> calculator.divide(10, 0),
+                "Dividir por cero debe lanzar ArithmeticException");
 
         // Verificamos el mensaje de la excepción
         assertEquals("No se puede dividir por cero", exception.getMessage());
@@ -153,5 +152,12 @@ class CalculatorTest {
     void testIsPositiveWithNonPositiveNumber() {
         assertFalse(calculator.isPositive(-5), "-5 no debe ser positivo");
         assertFalse(calculator.isPositive(0), "0 no debe ser positivo");
+    }
+
+    @Test
+    @DisplayName("Calcular potencia")
+    void testPower() {
+        int result = calculator.power(2, 3);
+        assertEquals(8, result, "2^3 debe ser 8");
     }
 }
